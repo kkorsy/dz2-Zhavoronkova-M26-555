@@ -1,7 +1,7 @@
 [project]
 name = "primitive-db"
 version = "0.1.0"
-description = "primitive-db"
+description = "Консольная база данных с хранением в JSON"
 readme = "README.md"
 authors = [
     { name = "kkorsy", email = "kkorsy@mail.ru" }
@@ -23,3 +23,6 @@ build-backend = "uv_build"
 dev = [
     "ruff>=0.17.4",
 ]
+
+[tool.ruff.lint]
+extend-select = ["E501"]

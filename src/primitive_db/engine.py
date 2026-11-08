@@ -1,14 +1,12 @@
-import os
-
 import prompt
 from prettytable import PrettyTable
 
 from primitive_db import core, parser, utils
+from primitive_db.constants import COMMAND_INDEX, ID_COLUMN_NAME, METADATA_FILEPATH
+from primitive_db.decorators import handle_db_errors
 
-METADATA_FILEPATH = "db_meta.json"
-COMMAND_INDEX = 0
 
-
+@handle_db_errors
 def run() -> None:
     """Основной цикл программы."""
     print_help()
@@ -45,9 +43,7 @@ def run() -> None:
                 if table_name is not None:
                     result = core.drop_table(metadata, table_name)
                     if result is not None:
-                        filepath = f"data/{table_name}.json"
-                        if os.path.exists(filepath):
-                            os.remove(filepath)
+                        utils.delete_table_data(table_name)
                         utils.save_metadata(METADATA_FILEPATH, result)
                         print(f"Таблица {table_name} успешно удалена")
             case "insert":
@@ -57,13 +53,16 @@ def run() -> None:
                     result = core.insert(metadata, table_name, values)
                     if result is not None:
                         utils.save_table_data(table_name, result)
-                        new_id = result[-1][core.ID_COLUMN_NAME]
-                        print(f'Запись с ID={new_id} успешно добавлена в таблицу "{table_name}".')
+                        new_id = result[-1][ID_COLUMN_NAME]
+                        print(f'Запись с ID={new_id} успешно добавлена '
+                              f'в таблицу "{table_name}".')
             case "select":
                 prepared_args = parser.parse_args_select(args)
                 if prepared_args is not None:
                     table_name, where_clause = prepared_args
-                    table_data = core.prepare_table_data(metadata, table_name, [where_clause])
+                    table_data = core.prepare_table_data(
+                        metadata, table_name, [where_clause]
+                    )
                     if table_data is None:
                         continue
                     result = core.select(table_data, where_clause)
@@ -73,7 +72,9 @@ def run() -> None:
                 prepared_args = parser.parse_args_update(args)
                 if prepared_args is not None:
                     table_name, set_clause, where_clause = prepared_args
-                    table_data = core.prepare_table_data(metadata, table_name, [set_clause, where_clause])
+                    table_data = core.prepare_table_data(
+                        metadata, table_name, [set_clause, where_clause]
+                    )
                     if table_data is None:
                         continue
                     result = core.update(table_data, set_clause, where_clause)
@@ -83,7 +84,9 @@ def run() -> None:
                 prepared_args = parser.parse_args_delete(args)
                 if prepared_args is not None:
                     table_name, where_clause = prepared_args
-                    table_data = core.prepare_table_data(metadata, table_name, [where_clause])
+                    table_data = core.prepare_table_data(
+                        metadata, table_name, [where_clause]
+                    )
                     if table_data is None:
                         continue
                     result = core.delete(table_data, where_clause)
@@ -107,11 +110,15 @@ def print_help() -> None:
     print("<command> drop_table <имя_таблицы> - удалить таблицу")
 
     print("\n***Операции с данными***")
-    print("<command> insert into <имя_таблицы> values (<значение1>, <значение2>, ...) - создать запись")
+    print("<command> insert into <имя_таблицы> "
+          "values (<значение1>, <значение2>, ...) - создать запись")
     print("<command> select from <имя_таблицы> - прочитать все записи")
-    print("<command> select from <имя_таблицы> where <столбец> = <значение> - прочитать записи по условию")
-    print("<command> update <имя_таблицы> set <столбец> = <новое_значение> where <столбец_условия> = <значение_условия> - обновить записи")
-    print("<command> delete from <имя_таблицы> where <столбец> = <значение> - удалить записи по условию")
+    print("<command> select from <имя_таблицы> "
+          "where <столбец> = <значение> - прочитать записи по условию")
+    print("<command> update <имя_таблицы> set <столбец> = <новое_значение> "
+          "where <столбец_условия> = <значение_условия> - обновить записи")
+    print("<command> delete from <имя_таблицы> "
+          "where <столбец> = <значение> - удалить записи по условию")
     print("<command> info <имя_таблицы> - вывести информацию о таблице")
 
     print("\nОбщие команды:")

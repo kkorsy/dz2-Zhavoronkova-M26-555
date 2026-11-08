@@ -30,22 +30,19 @@ def parse_args_create_table(args: list[str]) -> tuple[str, dict[str, str]] | Non
                 return
             column = parsed_column
         if column.count(":") != 1:
-            print(f"Некорректное значение: {column}. Ожидается имя:тип. Попробуйте снова.")
+            print(f"Некорректное значение: {column}. "
+                  "Ожидается имя:тип. Попробуйте снова.")
             return
 
         column_name, column_type = column.split(":")
         if not column_name.strip() or not column_type.strip():
-            print(
-                f"Некорректное значение: {column}. "
-                "Имя и тип не могут быть пустыми. Попробуйте снова."
-            )
+            print(f"Некорректное значение: {column}. "
+                  "Имя и тип не могут быть пустыми. Попробуйте снова.")
             return
 
         if column_name in columns:
-            print(
-                f"Некорректное значение: {column_name}. "
-                "Имя столбца указано несколько раз. Попробуйте снова."
-            )
+            print(f"Некорректное значение: {column_name}. "
+                  "Имя столбца указано несколько раз. Попробуйте снова.")
             return
 
         columns[column_name] = column_type
@@ -82,7 +79,8 @@ def parse_args_select(args: list[str]) -> tuple[str, dict | None] | None:
     """Разбирает from <таблица> с необязательным условием where."""
 
     if len(args) < 2 or args[0] != "from":
-        print("Ошибка: ожидается select from <имя_таблицы> [where <столбец> = <значение>].")
+        print("Ошибка: ожидается select from <имя_таблицы> "
+              "[where <столбец> = <значение>].")
         return None
 
     table_name = _parse_table_name(args[1])
@@ -104,7 +102,8 @@ def parse_args_update(args: list[str]) -> tuple[str, dict, dict] | None:
     """Разбирает <таблица> set <присваивание> where <условие>."""
 
     if len(args) < 5 or args[1] != "set" or "where" not in args[3:]:
-        print("Ошибка: ожидается update <имя_таблицы> set <столбец> = <значение> where <столбец> = <значение>.")
+        print("Ошибка: ожидается update <имя_таблицы> set <столбец> = <значение> "
+              "where <столбец> = <значение>.")
         return None
 
     table_name = _parse_table_name(args[0])
@@ -114,7 +113,7 @@ def parse_args_update(args: list[str]) -> tuple[str, dict, dict] | None:
     set_clause = parse_set_clause(" ".join(args[2:where_index]))
     if set_clause is None:
         return None
-    where_clause = parse_where_clause(" ".join(args[where_index + 1:]))
+    where_clause = parse_where_clause(" ".join(args[where_index + 1 :]))
     if where_clause is None:
         return None
     return table_name, set_clause, where_clause
@@ -124,7 +123,8 @@ def parse_args_delete(args: list[str]) -> tuple[str, dict] | None:
     """Разбирает from <таблица> where <условие>."""
 
     if len(args) < 4 or args[0] != "from" or args[2] != "where":
-        print("Ошибка: ожидается delete from <имя_таблицы> where <столбец> = <значение>.")
+        print("Ошибка: ожидается delete from <имя_таблицы> "
+              "where <столбец> = <значение>.")
         return None
 
     table_name = _parse_table_name(args[1])
@@ -180,10 +180,8 @@ def parse_value(value: str) -> str | int | bool | None:
     try:
         return int(value)
     except ValueError:
-        print(
-            f"Некорректное значение: {value}. "
-            "Ожидается целое число, true/false или строка в кавычках."
-        )
+        print(f"Некорректное значение: {value}. "
+              "Ожидается целое число, true/false или строка в кавычках.")
         return None
 
 
