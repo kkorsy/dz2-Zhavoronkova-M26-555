@@ -109,6 +109,6 @@ info users
 
 [![asciicast](https://asciinema.org/a/hHSgjmiNyTLLrvgW.svg)](https://asciinema.org/a/hHSgjmiNyTLLrvgW)
 
-# Демонстрация: запрос на подтверждение
+## Демонстрация: запрос на подтверждение
 
 [![asciicast](https://asciinema.org/a/24un4Zy1bwCgvDqV.svg)](https://asciinema.org/a/24un4Zy1bwCgvDqV)
